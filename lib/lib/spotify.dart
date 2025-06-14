@@ -33,7 +33,7 @@ class SpotifyClient {
 
   dynamic getPopularSongs() async{
     Response response = await dio.get(
-      "https://api.spotify.com/v1/playlists/59aGQ5CfHNPhLe0OzbvBDD",
+      "https://api.spotify.com/v1/playlists/5SLPaOxQyJ8Ne9zpmTOvSe",
       options: Options(
         headers: {
           "Authorization": "Bearer $token",
@@ -47,7 +47,7 @@ class SpotifyClient {
         name: song["name"],
         artistName: song["artists"][0]["name"],
         albumImageUrl: song["album"]["images"][0]["url"],
-        previewUrl: song["preview_url"],
+        previewUrl: "https://p.scdn.co/mp3-preview/f85c348040c1072b3832a0fccb5c81d34dfefcfb",
       );
     }).toList();
   }

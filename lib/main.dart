@@ -1,9 +1,11 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:udemy__spotify_app/lib/spotify.dart';
 import 'package:udemy__spotify_app/widgets/song_card.dart';
 import 'package:udemy__spotify_app/modules/songs/song.dart';
+import 'package:udemy__spotify_app/widgets/player.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -23,8 +25,11 @@ class MusicApp extends StatefulWidget {
 }
 
 class _MusicAppState extends State<MusicApp> {
+  final AudioPlayer _audioPlayer = AudioPlayer();
   List<Song> _popularSongs = [];
   bool _isInitialized = false;
+  Song? _selectedSong;
+  bool _isPlaying = false;
 
   @override
   void initState() {
@@ -40,6 +45,26 @@ class _MusicAppState extends State<MusicApp> {
     });
   }
 
+  void _play() {
+    _audioPlayer.play(UrlSource(_selectedSong!.previewUrl!));
+    setState(() {
+      _isPlaying = true;
+    });
+  }
+
+  void _stop() {
+    _audioPlayer.stop();
+    setState(() {
+      _isPlaying = false;
+    });
+  }
+
+  void _handleSongSelected(Song song) {
+    setState(() {
+      _selectedSong = song;
+    });
+    _play();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +143,7 @@ class _MusicAppState extends State<MusicApp> {
                                 (int index) => auto,
                               ),
                               children: _popularSongs.map((song) {
-                                return SongCard(song: song);
+                                return SongCard(song: song, onTap: _handleSongSelected);
                               }).toList(),
                             )
                           )
@@ -127,6 +152,17 @@ class _MusicAppState extends State<MusicApp> {
                   ),
                 ],
               ),
+              if (_selectedSong != null)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: IntrinsicHeight(
+                    child: Player(
+                      song: _selectedSong!,
+                      isPlay: _isPlaying,
+                      onButtonTap: () => _isPlaying ? _stop() : _play(),
+                    )
+                  ),
+                ),
             ],
           ),
         ),
